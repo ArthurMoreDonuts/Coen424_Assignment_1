@@ -1,0 +1,20 @@
+syntax = "proto2";
+option java_package = "com.Coen424.Assignment1";
+
+message ResponseProto {
+    required string RFW_ID = 1;
+    required int32 last_batch_ID = 2;
+
+
+
+    message Record {
+
+        required double CPU = 1;
+        required double net_in = 2;
+        required double net_out = 3;
+        required double memory = 4;
+        required bool training_or_testing = 5;
+        required bool DVD_or_NDBench = 6;
+    }
+    repeated Record Batch = 3;
+}

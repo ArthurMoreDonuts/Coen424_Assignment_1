@@ -1,0 +1,15 @@
+syntax = "proto2";
+option java_package = "com.Coen424.Assignment1";
+
+message RequestProto {
+    required string RFW_ID = 1;
+    required string Benchmark = 2;
+    required string Workload_Metric = 3;
+    required int32 Batch_Unit = 4;
+    required int32 Batch_ID = 5;
+    required int32 Batch_Size = 6;
+    required string Data_Type = 7;
+
+}
+
+
