@@ -306,6 +306,7 @@ public class server {
 							}
 
 							outToClient.writeBytes("-Proto" + "\n");
+							Thread.sleep(50);
 							sendBytes(Proto,connectionSocket);
 
 
@@ -324,8 +325,10 @@ public class server {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
-			  		
+
 		}}).start();
 		  
 	  

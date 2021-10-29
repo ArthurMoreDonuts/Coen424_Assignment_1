@@ -23,8 +23,8 @@ public class client {
 		try {
 
 			//create a new socket to connect with the server application
-			clientSocket = new Socket("localhost", 6789);
-			//clientSocket = new Socket("3.143.210.107", 6789);
+			//clientSocket = new Socket("localhost", 6789);
+			clientSocket = new Socket("18.191.62.61", 6789);
 			DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
 
 			//create a buffer reader and connect it to the socket's input stream
