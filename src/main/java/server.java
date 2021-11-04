@@ -196,7 +196,8 @@ public class server {
 							System.out.println(data.toString());
 
 						}
-						Request.RequestProto request = Request.RequestProto.parseFrom(data);
+						//Request.RequestProto request = Request.RequestProto.parseFrom(data);
+						Request.RequestProto request = (Request.RequestProto) deserialize(data);
 						if (request != null){
 
 							Record[] Batch = new Record[request.getBatchSize()*request.getBatchUnit()];
@@ -291,7 +292,7 @@ public class server {
 								response.addBatch(recordbuilder.build());
 							}
 							System.out.println("Check point ");
-							byte[] Proto = response.build().toByteArray();
+							//byte[] Proto = response.build().toByteArray();
 
 							List <Response.ResponseProto.Record> temp = response.build().getBatchList();
 							Response.ResponseProto.Record temo;
@@ -305,9 +306,9 @@ public class server {
 										+ " " + temo.getMemory());
 							}
 
-							outToClient.writeBytes("-Proto" + "\n");
-							Thread.sleep(50);
-							sendBytes(Proto,connectionSocket);
+
+							//Thread.sleep(50);
+							sendBytes(serialize(response.build()),connectionSocket);
 
 
 
@@ -325,7 +326,7 @@ public class server {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
-			} catch (InterruptedException e) {
+			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			}
 
@@ -348,11 +349,23 @@ public class server {
 		// just like the socket variable.
 		OutputStream out = socket.getOutputStream();
 		DataOutputStream dos = new DataOutputStream(out);
-
-		dos.writeInt(len);
+		dos.writeBytes("-Proto@" + len + "\n");
+	//	dos.writeInt(len);
 		if (len > 0) {
 			dos.write(myByteArray, start, len);
 		}
+	}
+
+	public static byte[] serialize(Object obj) throws IOException{
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		ObjectOutputStream os = new ObjectOutputStream(out);
+		os.writeObject(obj);
+		return out.toByteArray();
+	}
+	public static Object deserialize(byte[] data) throws IOException, ClassNotFoundException{
+		ByteArrayInputStream in = new ByteArrayInputStream(data);
+		ObjectInputStream is = new ObjectInputStream(in);
+		return is.readObject();
 	}
     
 }

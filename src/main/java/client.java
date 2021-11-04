@@ -5,6 +5,8 @@ import java.net.*;
 import java.util.List;
 import java.util.UUID;
 
+import static java.net.SocketOptions.SO_RCVBUF;
+
 
 public class client {
 
@@ -23,8 +25,8 @@ public class client {
 		try {
 
 			//create a new socket to connect with the server application
-			//clientSocket = new Socket("localhost", 6789);
-			clientSocket = new Socket("18.191.62.61", 6789);
+			clientSocket = new Socket("localhost", 6789);
+			//clientSocket = new Socket("3.142.142.222", 6789);
 			DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
 
 			//create a buffer reader and connect it to the socket's input stream
@@ -107,25 +109,33 @@ public class client {
 						request.setWorkloadMetric(Workload_Metric);
 						request.setDataType(Data_Type);
 
-						byte[] Proto = request.build().toByteArray();
-						sendBytes(Proto);
-
+						//byte[] Proto = request.build().toByteArray();
+					//	Object A = Request.RequestProto.class.cast(request.build());
+					//	sendBytes(serialize(A));
+						sendBytes(serialize(request.build()));
 						Boolean waiting = true;
 						while (waiting) {
 							receivedSentence = inFromServer.readLine();
 							if (receivedSentence.startsWith("-Proto")) {
-								int len = dis.readInt();
-								byte[] data = new byte[len];
+								String[] strings = receivedSentence.split("@");
+
+								System.out.println("we are getting something "+ strings[1]);
+								int len = Integer.parseInt(strings[1]);
+
+								byte[] data = new byte[0];
 								if (len > 0) {
+									data = new byte[len];
+									//dis.read(data);
 									dis.readFully(data);
-									System.out.println(data.toString());
+									System.out.println("Not here ");
 
 								}
 
-							Response.ResponseProto response = Response.ResponseProto.parseFrom(data);
+
+							//Response.ResponseProto response = Response.ResponseProto.parseFrom(data);
+								Response.ResponseProto response = (Response.ResponseProto) deserialize(data);
 							//System.out.println(receivedSentence);
 							if (response != null) {
-
 								List<Response.ResponseProto.Record> recordList = response.getBatchList();
 								Response.ResponseProto.Record temo;
 								Record[] array = new Record[recordList.size()];
@@ -343,6 +353,19 @@ public class client {
 			dos.write(myByteArray, start, len);
 		}
 	}
+
+	public static byte[] serialize(Object obj) throws IOException{
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		ObjectOutputStream os = new ObjectOutputStream(out);
+		os.writeObject(obj);
+		return out.toByteArray();
+	}
+	public static Object deserialize(byte[] data) throws IOException, ClassNotFoundException{
+		ByteArrayInputStream in = new ByteArrayInputStream(data);
+		ObjectInputStream is = new ObjectInputStream(in);
+		return is.readObject();
+	}
+
 
 
     
